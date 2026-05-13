@@ -150,7 +150,7 @@ public final class ClickGuiScreen extends Screen {
 		return switch (category) {
 			case COMBAT -> "⚔";
 			case MOVEMENT -> "➤";
-			case VISUAL -> "◈";
+			case RENDER -> "◈";
 			case MISC -> "☰";
 		};
 	}

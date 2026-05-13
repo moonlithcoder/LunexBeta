@@ -3,24 +3,21 @@ package dev.lunex.client.module;
 import dev.lunex.client.config.ClientConfig;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
 
 public abstract class Module {
 	private final String id;
 	private final String name;
 	private final String description;
 	private final Category category;
-	private final KeyBinding keyBinding;
 	private final boolean defaultEnabled;
 	private final ClientConfig config;
 	private boolean enabled;
 
-	protected Module(String id, String name, String description, Category category, KeyBinding keyBinding, boolean defaultEnabled, ClientConfig config) {
+	protected Module(String id, String name, String description, Category category, boolean defaultEnabled, ClientConfig config) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.category = category;
-		this.keyBinding = keyBinding;
 		this.defaultEnabled = defaultEnabled;
 		this.config = config;
 		this.enabled = defaultEnabled;
@@ -77,10 +74,6 @@ public abstract class Module {
 
 	public Category getCategory() {
 		return category;
-	}
-
-	public KeyBinding getKeyBinding() {
-		return keyBinding;
 	}
 
 	public boolean isEnabled() {

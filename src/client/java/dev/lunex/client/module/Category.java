@@ -3,7 +3,7 @@ package dev.lunex.client.module;
 public enum Category {
 	COMBAT("Combat"),
 	MOVEMENT("Movement"),
-	VISUAL("Visual"),
+	RENDER("Render"),
 	MISC("Misc");
 
 	private final String title;

@@ -8,12 +8,9 @@ import dev.lunex.client.module.impl.FullbrightModule;
 import dev.lunex.client.module.impl.SprintModule;
 import dev.lunex.client.module.impl.TargetEspModule;
 
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.LivingEntity;
 
 import org.lwjgl.glfw.GLFW;
@@ -24,11 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 public final class ModuleManager {
-	public static final String KEY_CATEGORY = "key.category.lunex";
-
 	private final ClientConfig config;
 	private final List<Module> modules = new ArrayList<>();
-	private final KeyBinding clickGuiKey = key("key.lunex.toggle_clickgui", GLFW.GLFW_KEY_RIGHT_SHIFT);
 	private AuraModule auraModule;
 	private TargetEspModule targetEspModule;
 
@@ -37,26 +31,20 @@ public final class ModuleManager {
 	}
 
 	public void registerDefaults() {
-		auraModule = new AuraModule(config, key("key.lunex.toggle_aura", GLFW.GLFW_KEY_G));
-		targetEspModule = new TargetEspModule(config, key("key.lunex.toggle_targetesp", GLFW.GLFW_KEY_V));
+		auraModule = new AuraModule(config);
+		targetEspModule = new TargetEspModule(config);
 		register(auraModule);
-		register(new SprintModule(config, key("key.lunex.toggle_sprint", GLFW.GLFW_KEY_R)));
+		register(new SprintModule(config));
 		register(targetEspModule);
-		register(new FullbrightModule(config, key("key.lunex.toggle_fullbright", GLFW.GLFW_KEY_B)));
-		register(new CoordinatesModule(config, key("key.lunex.toggle_coordinates", GLFW.GLFW_KEY_C)));
+		register(new FullbrightModule(config));
+		register(new CoordinatesModule(config));
 		modules.forEach(Module::loadState);
 	}
 
 	public void handleKeybinds() {
-		MinecraftClient client = MinecraftClient.getInstance();
-		while (clickGuiKey.wasPressed()) {
+		if (isClickGuiKeyDown()) {
+			MinecraftClient client = MinecraftClient.getInstance();
 			client.setScreen(new ClickGuiScreen(this));
-		}
-
-		for (Module module : modules) {
-			while (module.getKeyBinding().wasPressed()) {
-				module.toggle();
-			}
 		}
 	}
 
@@ -98,7 +86,10 @@ public final class ModuleManager {
 		modules.add(module);
 	}
 
-	private static KeyBinding key(String translationKey, int code) {
-		return KeyBindingHelper.registerKeyBinding(new KeyBinding(translationKey, InputUtil.Type.KEYSYM, code, KEY_CATEGORY));
+	private static boolean isClickGuiKeyDown() {
+		MinecraftClient client = MinecraftClient.getInstance();
+		return client.currentScreen == null
+				&& client.getWindow() != null
+				&& GLFW.glfwGetKey(client.getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_SHIFT) == GLFW.GLFW_PRESS;
 	}
 }

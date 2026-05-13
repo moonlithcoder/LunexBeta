@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
@@ -18,8 +17,8 @@ public final class TargetEspModule extends Module {
 	private static final int PLAYER_COLOR = 0xFF9E6CFF;
 	private static final double RANGE = 32.0D;
 
-	public TargetEspModule(ClientConfig config, KeyBinding keyBinding) {
-		super("targetesp", "TargetESP", "Draws 3D outlines around valid targets.", Category.VISUAL, keyBinding, true, config);
+	public TargetEspModule(ClientConfig config) {
+		super("targetesp", "TargetESP", "Draws 3D outlines around valid targets.", Category.RENDER, true, config);
 	}
 
 	public void render(WorldRenderContext context, ModuleManagerAccessor modules) {

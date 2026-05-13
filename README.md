@@ -24,11 +24,7 @@ The remapped mod jar is written to `build/libs/`.
 ## Controls
 
 - Right Shift — open the Lunex ClickGUI
-- G — toggle Aura
-- V — toggle TargetESP
-- R — toggle Sprint
-- B — toggle Fullbright
-- C — toggle Coordinates HUD
+- Modules are toggled from the ClickGUI.
 
 ## Project layout
 

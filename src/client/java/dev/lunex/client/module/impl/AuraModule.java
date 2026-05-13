@@ -6,7 +6,6 @@ import dev.lunex.client.module.Module;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
@@ -16,8 +15,8 @@ public final class AuraModule extends Module {
 	private static final double RANGE = 3.8D;
 	private LivingEntity target;
 
-	public AuraModule(ClientConfig config, KeyBinding keyBinding) {
-		super("aura", "Aura", "Targets the nearest valid player in melee range.", Category.COMBAT, keyBinding, false, config);
+	public AuraModule(ClientConfig config) {
+		super("aura", "Aura", "Targets the nearest valid player in melee range.", Category.COMBAT, false, config);
 	}
 
 	@Override

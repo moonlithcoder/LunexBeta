@@ -8,6 +8,6 @@ import net.minecraft.client.option.KeyBinding;
 
 public final class CoordinatesModule extends Module {
 	public CoordinatesModule(ClientConfig config, KeyBinding keyBinding) {
-		super("coordinates", "Coordinates", "Shows current player coordinates on the HUD.", Category.RENDER, keyBinding, true, config);
+		super("coordinates", "Coordinates", "Shows current player coordinates on the HUD.", Category.VISUAL, keyBinding, true, config);
 	}
 }

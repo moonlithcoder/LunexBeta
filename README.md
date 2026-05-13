@@ -21,6 +21,15 @@ The remapped mod jar is written to `build/libs/`.
 ./gradlew runClient
 ```
 
+## Controls
+
+- Right Shift — open the Lunex ClickGUI
+- G — toggle Aura
+- V — toggle TargetESP
+- R — toggle Sprint
+- B — toggle Fullbright
+- C — toggle Coordinates HUD
+
 ## Project layout
 
 - `src/main/java` — shared Fabric entrypoint.

@@ -12,7 +12,7 @@ public final class FullbrightModule extends Module {
 	private boolean capturedGamma;
 
 	public FullbrightModule(ClientConfig config, KeyBinding keyBinding) {
-		super("fullbright", "Fullbright", "Raises gamma for dark environments.", Category.RENDER, keyBinding, false, config);
+		super("fullbright", "Fullbright", "Raises gamma for dark environments.", Category.VISUAL, keyBinding, false, config);
 	}
 
 	@Override

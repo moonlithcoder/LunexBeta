@@ -17,6 +17,20 @@ public final class Render2D {
 		context.drawBorder(x, y, width, height, color);
 	}
 
+	public static void glow(DrawContext context, int x, int y, int width, int height, int color, int radius) {
+		for (int layer = radius; layer > 0; layer--) {
+			int alpha = Math.max(8, 42 - layer * 5);
+			border(context, x - layer, y - layer, width + layer * 2, height + layer * 2, alpha(color, alpha));
+		}
+	}
+
+	public static void horizontalGradient(DrawContext context, int x, int y, int width, int height, int leftColor, int rightColor) {
+		for (int offset = 0; offset < width; offset++) {
+			float progress = width <= 1 ? 1.0F : offset / (float) (width - 1);
+			context.fill(x + offset, y, x + offset + 1, y + height, lerpColor(leftColor, rightColor, progress));
+		}
+	}
+
 	public static void verticalGradient(DrawContext context, int x, int y, int width, int height, int topColor, int bottomColor) {
 		context.fillGradient(x, y, x + width, y + height, topColor, bottomColor);
 	}
@@ -56,5 +70,22 @@ public final class Render2D {
 
 	public static int alpha(int color, int alpha) {
 		return (alpha << 24) | (color & 0x00FFFFFF);
+	}
+
+	public static int lerpColor(int start, int end, float progress) {
+		float value = clamp(progress, 0.0F, 1.0F);
+		int a = (int) (channel(start, 24) + (channel(end, 24) - channel(start, 24)) * value);
+		int r = (int) (channel(start, 16) + (channel(end, 16) - channel(start, 16)) * value);
+		int g = (int) (channel(start, 8) + (channel(end, 8) - channel(start, 8)) * value);
+		int b = (int) (channel(start, 0) + (channel(end, 0) - channel(start, 0)) * value);
+		return a << 24 | r << 16 | g << 8 | b;
+	}
+
+	public static float clamp(float value, float min, float max) {
+		return Math.max(min, Math.min(max, value));
+	}
+
+	private static int channel(int color, int shift) {
+		return color >> shift & 0xFF;
 	}
 }

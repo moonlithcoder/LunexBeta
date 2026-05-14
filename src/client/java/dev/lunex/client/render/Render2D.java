@@ -116,7 +116,7 @@ public final class Render2D {
 
 	public static void text(DrawContext context, String text, int x, int y, int color, boolean shadow) {
 		TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
-		context.drawText(renderer, lunexText(text), x, y, color, shadow);
+		context.drawText(renderer, lunexText(sanitize(text)), x, y, color, shadow);
 	}
 
 	public static void centeredText(DrawContext context, String text, int x, int y, int color) {
@@ -128,21 +128,22 @@ public final class Render2D {
 		matrices.push();
 		matrices.translate(x, y, 0.0F);
 		matrices.scale(scale, scale, 1.0F);
-		context.drawText(MinecraftClient.getInstance().textRenderer, lunexText(text), 0, 0, color, false);
+		context.drawText(MinecraftClient.getInstance().textRenderer, lunexText(sanitize(text)), 0, 0, color, false);
 		matrices.pop();
 	}
 
 	public static int width(String text) {
-		return MinecraftClient.getInstance().textRenderer.getWidth(lunexText(text));
+		return MinecraftClient.getInstance().textRenderer.getWidth(lunexText(sanitize(text)));
 	}
 
 	public static String trimToWidth(String text, int maxWidth) {
-		String value = text;
-		while (!value.isEmpty() && width(value + "…") > maxWidth) {
+		String sanitized = sanitize(text);
+		String value = sanitized;
+		while (!value.isEmpty() && width(value + "...") > maxWidth) {
 			value = value.substring(0, value.length() - 1);
 		}
 
-		return value.length() == text.length() ? text : value + "…";
+		return value.length() == sanitized.length() ? sanitized : value + "...";
 	}
 
 	public static void line(DrawContext context, int x1, int y1, int x2, int y2, int color) {
@@ -179,6 +180,20 @@ public final class Render2D {
 
 	private static Text lunexText(String text) {
 		return Text.literal(text).styled(style -> style.withFont(LUNEX_FONT));
+	}
+
+	private static String sanitize(String text) {
+		StringBuilder builder = new StringBuilder(text.length());
+		for (int index = 0; index < text.length(); index++) {
+			char character = text.charAt(index);
+			if ((character >= 32 && character <= 126) || character == '\u2026') {
+				builder.append(character);
+			} else {
+				builder.append('?');
+			}
+		}
+
+		return builder.toString();
 	}
 
 	private static int cornerInset(int position, int length, int radius) {

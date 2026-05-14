@@ -2,10 +2,10 @@
   "providers": [
     {
       "type": "ttf",
-      "file": "lunex:font/lunex.ttf",
-      "size": 10.5,
-      "oversample": 3.0,
-      "shift": [0.0, 0.5]
+      "file": "lunex:font/lunex_custom.ttf",
+      "size": 9.0,
+      "oversample": 4.0,
+      "shift": [0.0, 1.0]
     },
     {
       "type": "reference",

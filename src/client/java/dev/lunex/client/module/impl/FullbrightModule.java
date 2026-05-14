@@ -6,14 +6,12 @@ import dev.lunex.client.module.Module;
 
 import net.minecraft.client.MinecraftClient;
 
-import org.lwjgl.glfw.GLFW;
-
 public final class FullbrightModule extends Module {
 	private double previousGamma = 1.0D;
 	private boolean capturedGamma;
 
 	public FullbrightModule(ClientConfig config) {
-		super("fullbright", "Fullbright", "Brightens dark areas", Category.RENDER, false, GLFW.GLFW_KEY_B, config);
+		super("fullbright", "Fullbright", "Brightens dark areas", Category.RENDER, false, config);
 	}
 
 	@Override

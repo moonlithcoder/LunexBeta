@@ -50,7 +50,7 @@ public final class ClickGuiScreen extends Screen {
 	private int targetScroll;
 	private int ticks;
 	private Module expandedModule;
-	private Module bindingModule;
+	private Module hoveredModule;
 
 	public ClickGuiScreen(ModuleManager moduleManager) {
 		super(Text.literal("Lunex ClickGUI"));
@@ -98,7 +98,6 @@ public final class ClickGuiScreen extends Screen {
 				selectedCategory = category;
 				targetScroll = 0;
 				expandedModule = null;
-				bindingModule = null;
 				return true;
 			}
 			categoryY += 34;
@@ -135,11 +134,6 @@ public final class ClickGuiScreen extends Screen {
 			}
 			if (Render2D.hovered(mouseX, mouseY, contentX + 12, contentY + height - 24, 64, 16)) {
 				expandedModule = expandedModule == module ? null : module;
-				bindingModule = null;
-				return true;
-			}
-			if (expandedModule == module && Render2D.hovered(mouseX, mouseY, contentX + cardWidth - 82, contentY + height - 26, 68, 18)) {
-				bindingModule = module;
 				return true;
 			}
 			contentY += height + CARD_GAP;
@@ -162,9 +156,8 @@ public final class ClickGuiScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (bindingModule != null) {
-			bindingModule.setKeybind(keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_BACKSPACE ? 0 : keyCode);
-			bindingModule = null;
+		if (hoveredModule != null && isBindableKey(keyCode)) {
+			hoveredModule.setKeybind(keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_BACKSPACE ? 0 : keyCode);
 			return true;
 		}
 
@@ -214,6 +207,7 @@ public final class ClickGuiScreen extends Screen {
 	}
 
 	private void renderModulePanel(DrawContext context, int mouseX, int mouseY, int x, int y, int panelWidth, int panelHeight) {
+		hoveredModule = null;
 		Render2D.roundedRect(context, x, y, panelWidth, panelHeight, 18, 0x86101017);
 		Render2D.roundedBorder(context, x, y, panelWidth, panelHeight, 18, 0x28FFFFFF);
 		String title = selectedCategory.getTitle() + " Modules";
@@ -265,6 +259,9 @@ public final class ClickGuiScreen extends Screen {
 	private void renderModuleCard(DrawContext context, int mouseX, int mouseY, Module module, int x, int y, int width, int index) {
 		int height = cardHeight(module);
 		boolean hovered = Render2D.hovered(mouseX, mouseY, x, y, width, height);
+		if (hovered) {
+			hoveredModule = module;
+		}
 		float hover = animation("hover:" + module.getId(), hovered, 0.2F);
 		float enabled = animation("toggle:" + module.getId(), module.isEnabled(), 0.18F);
 		float wave = module.isEnabled() ? pulse(index * 0.45F) : hover;
@@ -279,7 +276,8 @@ public final class ClickGuiScreen extends Screen {
 		Render2D.text(context, module.getName(), x + 14, drawY + 13, TEXT);
 		Render2D.text(context, Render2D.trimToWidth(module.getDescription(), width - 110), x + 14, drawY + 29, Render2D.lerpColor(OFF, 0xFFE9E8F5, enabled));
 		renderStateButton(context, x + width - 62, drawY + 14, module, enabled);
-		Render2D.text(context, "Bind: " + keyName(module.getKeybind()), x + 14, drawY + 47, MUTED);
+		int bindColor = hovered ? TEXT : MUTED;
+		Render2D.text(context, "Bind: " + keyName(module.getKeybind()), x + 14, drawY + 47, bindColor);
 		renderSmallButton(context, expandedModule == module ? "Hide" : "Settings", x + 14, drawY + height - 24, 64, expandedModule == module);
 
 		if (expandedModule == module) {
@@ -306,8 +304,8 @@ public final class ClickGuiScreen extends Screen {
 		Render2D.text(context, "Mode", x + 22, settingsY + 7, DIM);
 		Render2D.text(context, module.isEnabled() ? "Enabled" : "Disabled", x + 70, settingsY + 7, MUTED);
 		Render2D.text(context, "Key", x + 22, settingsY + 20, DIM);
-		Render2D.text(context, bindingModule == module ? "Press key..." : keyName(module.getKeybind()), x + 70, settingsY + 20, TEXT);
-		renderSmallButton(context, "Bind", x + width - 82, settingsY + 7, 68, bindingModule == module);
+		Render2D.text(context, keyName(module.getKeybind()), x + 70, settingsY + 20, TEXT);
+		Render2D.text(context, "Hover card + press key", x + width - 144, settingsY + 13, MUTED);
 	}
 
 	private float animation(String id, boolean target, float speed) {
@@ -367,5 +365,14 @@ public final class ClickGuiScreen extends Screen {
 			name = name.substring("key.keyboard.".length());
 		}
 		return name.toUpperCase(Locale.ROOT);
+	}
+
+	private boolean isBindableKey(int keyCode) {
+		return keyCode != GLFW.GLFW_KEY_RIGHT_SHIFT
+				&& keyCode != GLFW.GLFW_KEY_LEFT_SHIFT
+				&& keyCode != GLFW.GLFW_KEY_LEFT_CONTROL
+				&& keyCode != GLFW.GLFW_KEY_RIGHT_CONTROL
+				&& keyCode != GLFW.GLFW_KEY_LEFT_ALT
+				&& keyCode != GLFW.GLFW_KEY_RIGHT_ALT;
 	}
 }

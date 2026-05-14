@@ -24,8 +24,8 @@ public final class ClickGuiScreen extends Screen {
 	private static final int GUI_HEIGHT = 318;
 	private static final int SIDEBAR_WIDTH = 126;
 	private static final int PANEL_MARGIN = 14;
-	private static final int CARD_HEIGHT = 66;
-	private static final int CARD_EXPANDED_HEIGHT = 108;
+	private static final int CARD_HEIGHT = 82;
+	private static final int CARD_EXPANDED_HEIGHT = 126;
 	private static final int CARD_GAP = 10;
 	private static final int CONTENT_TOP = 64;
 	private static final int BACKGROUND = 0xF20A0B0F;
@@ -50,7 +50,7 @@ public final class ClickGuiScreen extends Screen {
 	private int targetScroll;
 	private int ticks;
 	private Module expandedModule;
-	private Module hoveredModule;
+	private Module bindingModule;
 
 	public ClickGuiScreen(ModuleManager moduleManager) {
 		super(Text.literal("Lunex ClickGUI"));
@@ -98,6 +98,7 @@ public final class ClickGuiScreen extends Screen {
 				selectedCategory = category;
 				targetScroll = 0;
 				expandedModule = null;
+				bindingModule = null;
 				return true;
 			}
 			categoryY += 34;
@@ -132,8 +133,16 @@ public final class ClickGuiScreen extends Screen {
 				module.toggle();
 				return true;
 			}
-			if (Render2D.hovered(mouseX, mouseY, contentX + 12, contentY + height - 24, 64, 16)) {
+			if (Render2D.hovered(mouseX, mouseY, contentX + 12, contentY + 58, 72, 16)) {
 				expandedModule = expandedModule == module ? null : module;
+				if (expandedModule != module) {
+					bindingModule = null;
+				}
+				return true;
+			}
+			if (Render2D.hovered(mouseX, mouseY, contentX + cardWidth - 82, contentY + 58, 68, 16)) {
+				bindingModule = module;
+				expandedModule = module;
 				return true;
 			}
 			contentY += height + CARD_GAP;
@@ -156,8 +165,9 @@ public final class ClickGuiScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (hoveredModule != null && isBindableKey(keyCode)) {
-			hoveredModule.setKeybind(keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_BACKSPACE ? 0 : keyCode);
+		if (bindingModule != null && isBindableKey(keyCode)) {
+			bindingModule.setKeybind(keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_BACKSPACE ? 0 : keyCode);
+			bindingModule = null;
 			return true;
 		}
 
@@ -207,7 +217,6 @@ public final class ClickGuiScreen extends Screen {
 	}
 
 	private void renderModulePanel(DrawContext context, int mouseX, int mouseY, int x, int y, int panelWidth, int panelHeight) {
-		hoveredModule = null;
 		Render2D.roundedRect(context, x, y, panelWidth, panelHeight, 18, 0x86101017);
 		Render2D.roundedBorder(context, x, y, panelWidth, panelHeight, 18, 0x28FFFFFF);
 		String title = selectedCategory.getTitle() + " Modules";
@@ -259,9 +268,6 @@ public final class ClickGuiScreen extends Screen {
 	private void renderModuleCard(DrawContext context, int mouseX, int mouseY, Module module, int x, int y, int width, int index) {
 		int height = cardHeight(module);
 		boolean hovered = Render2D.hovered(mouseX, mouseY, x, y, width, height);
-		if (hovered) {
-			hoveredModule = module;
-		}
 		float hover = animation("hover:" + module.getId(), hovered, 0.2F);
 		float enabled = animation("toggle:" + module.getId(), module.isEnabled(), 0.18F);
 		float wave = module.isEnabled() ? pulse(index * 0.45F) : hover;
@@ -274,11 +280,11 @@ public final class ClickGuiScreen extends Screen {
 		Render2D.roundedBorder(context, x, drawY, width, height, 15, Render2D.alpha(TEXT, (int) (28 + enabled * 70 + hover * 18)));
 
 		Render2D.text(context, module.getName(), x + 14, drawY + 13, TEXT);
-		Render2D.text(context, Render2D.trimToWidth(module.getDescription(), width - 110), x + 14, drawY + 29, Render2D.lerpColor(OFF, 0xFFE9E8F5, enabled));
+		Render2D.text(context, Render2D.trimToWidth(module.getDescription(), width - 120), x + 14, drawY + 30, Render2D.lerpColor(OFF, 0xFFE9E8F5, enabled));
 		renderStateButton(context, x + width - 62, drawY + 14, module, enabled);
-		int bindColor = hovered ? TEXT : MUTED;
-		Render2D.text(context, "Bind: " + keyName(module.getKeybind()), x + 14, drawY + 47, bindColor);
-		renderSmallButton(context, expandedModule == module ? "Hide" : "Settings", x + 14, drawY + height - 24, 64, expandedModule == module);
+		Render2D.text(context, "Key " + keyName(module.getKeybind()), x + 14, drawY + 48, MUTED);
+		renderSmallButton(context, expandedModule == module ? "Hide" : "Settings", x + 14, drawY + 58, 72, expandedModule == module);
+		renderSmallButton(context, bindingModule == module ? "..." : "Bind", x + width - 82, drawY + 58, 68, bindingModule == module);
 
 		if (expandedModule == module) {
 			renderSettings(context, module, x, drawY, width, height);
@@ -299,13 +305,13 @@ public final class ClickGuiScreen extends Screen {
 	}
 
 	private void renderSettings(DrawContext context, Module module, int x, int y, int width, int height) {
-		int settingsY = y + 66;
-		Render2D.roundedRect(context, x + 10, settingsY, width - 20, 32, 9, 0xA00B0D12);
-		Render2D.text(context, "Mode", x + 22, settingsY + 7, DIM);
-		Render2D.text(context, module.isEnabled() ? "Enabled" : "Disabled", x + 70, settingsY + 7, MUTED);
-		Render2D.text(context, "Key", x + 22, settingsY + 20, DIM);
-		Render2D.text(context, keyName(module.getKeybind()), x + 70, settingsY + 20, TEXT);
-		Render2D.text(context, "Hover card + press key", x + width - 144, settingsY + 13, MUTED);
+		int settingsY = y + 82;
+		Render2D.roundedRect(context, x + 10, settingsY, width - 20, 36, 9, 0xA00B0D12);
+		Render2D.text(context, "State", x + 22, settingsY + 8, DIM);
+		Render2D.text(context, module.isEnabled() ? "Enabled" : "Disabled", x + 72, settingsY + 8, MUTED);
+		Render2D.text(context, "Bind", x + 22, settingsY + 22, DIM);
+		Render2D.text(context, bindingModule == module ? "..." : keyName(module.getKeybind()), x + 72, settingsY + 22, TEXT);
+		Render2D.text(context, "LMB Bind, press key", x + width - 140, settingsY + 15, MUTED);
 	}
 
 	private float animation(String id, boolean target, float speed) {
@@ -368,7 +374,9 @@ public final class ClickGuiScreen extends Screen {
 	}
 
 	private boolean isBindableKey(int keyCode) {
-		return keyCode != GLFW.GLFW_KEY_RIGHT_SHIFT
+		return keyCode == GLFW.GLFW_KEY_ESCAPE
+				|| keyCode == GLFW.GLFW_KEY_BACKSPACE
+				|| keyCode != GLFW.GLFW_KEY_RIGHT_SHIFT
 				&& keyCode != GLFW.GLFW_KEY_LEFT_SHIFT
 				&& keyCode != GLFW.GLFW_KEY_LEFT_CONTROL
 				&& keyCode != GLFW.GLFW_KEY_RIGHT_CONTROL

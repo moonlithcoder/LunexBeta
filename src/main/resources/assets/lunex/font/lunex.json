@@ -3,7 +3,7 @@
     {
       "type": "bitmap",
       "file": "lunex:font/lunex_full.png",
-      "height": 9,
+      "height": 10,
       "ascent": 8,
       "chars": [
         " !\"#$%&'()*+,-./",

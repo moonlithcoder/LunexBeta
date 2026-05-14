@@ -11,12 +11,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import org.lwjgl.glfw.GLFW;
+
 public final class AuraModule extends Module {
 	private static final double RANGE = 3.8D;
 	private LivingEntity target;
 
 	public AuraModule(ClientConfig config) {
-		super("aura", "Aura", "Targets the nearest valid player in melee range.", Category.COMBAT, false, config);
+		super("aura", "Aura", "Nearest melee target", Category.COMBAT, false, GLFW.GLFW_KEY_G, config);
 	}
 
 	@Override

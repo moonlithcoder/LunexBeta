@@ -12,13 +12,15 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
+import org.lwjgl.glfw.GLFW;
+
 public final class TargetEspModule extends Module {
-	private static final int TARGET_COLOR = 0xFFFF77DD;
-	private static final int PLAYER_COLOR = 0xFF9E6CFF;
+	private static final int TARGET_COLOR = 0xFFEDEFF7;
+	private static final int PLAYER_COLOR = 0xFF7D8492;
 	private static final double RANGE = 32.0D;
 
 	public TargetEspModule(ClientConfig config) {
-		super("targetesp", "TargetESP", "Draws 3D outlines around valid targets.", Category.RENDER, true, config);
+		super("targetesp", "TargetESP", "3D player outlines", Category.RENDER, true, GLFW.GLFW_KEY_V, config);
 	}
 
 	public void render(WorldRenderContext context, ModuleManagerAccessor modules) {

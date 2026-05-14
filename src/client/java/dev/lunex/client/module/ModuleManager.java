@@ -22,6 +22,7 @@ import java.util.Optional;
 public final class ModuleManager {
 	private final ClientConfig config;
 	private final List<Module> modules = new ArrayList<>();
+	private final List<Integer> pressedKeys = new ArrayList<>();
 	private AuraModule auraModule;
 	private TargetEspModule targetEspModule;
 
@@ -43,6 +44,30 @@ public final class ModuleManager {
 		if (isClickGuiKeyDown()) {
 			MinecraftClient client = MinecraftClient.getInstance();
 			client.setScreen(new ClickGuiScreen(this));
+			return;
+		}
+
+		MinecraftClient client = MinecraftClient.getInstance();
+		if (client.currentScreen != null || client.getWindow() == null) {
+			pressedKeys.clear();
+			return;
+		}
+
+		long handle = client.getWindow().getHandle();
+		for (Module module : modules) {
+			int keybind = module.getKeybind();
+			if (keybind <= 0) {
+				continue;
+			}
+
+			boolean pressed = GLFW.glfwGetKey(handle, keybind) == GLFW.GLFW_PRESS;
+			boolean tracked = pressedKeys.contains(keybind);
+			if (pressed && !tracked) {
+				module.toggle();
+				pressedKeys.add(keybind);
+			} else if (!pressed && tracked) {
+				pressedKeys.remove(Integer.valueOf(keybind));
+			}
 		}
 	}
 

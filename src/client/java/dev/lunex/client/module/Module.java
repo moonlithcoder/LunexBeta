@@ -10,21 +10,30 @@ public abstract class Module {
 	private final String description;
 	private final Category category;
 	private final boolean defaultEnabled;
+	private final int defaultKeybind;
 	private final ClientConfig config;
+	private int keybind;
 	private boolean enabled;
 
 	protected Module(String id, String name, String description, Category category, boolean defaultEnabled, ClientConfig config) {
+		this(id, name, description, category, defaultEnabled, 0, config);
+	}
+
+	protected Module(String id, String name, String description, Category category, boolean defaultEnabled, int defaultKeybind, ClientConfig config) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.category = category;
 		this.defaultEnabled = defaultEnabled;
+		this.defaultKeybind = defaultKeybind;
 		this.config = config;
 		this.enabled = defaultEnabled;
+		this.keybind = defaultKeybind;
 	}
 
 	public final void loadState() {
 		enabled = config.isModuleEnabled(id, defaultEnabled);
+		keybind = config.getModuleKeybind(id, defaultKeybind);
 		if (enabled) {
 			onEnable();
 		} else {
@@ -78,5 +87,14 @@ public abstract class Module {
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	public int getKeybind() {
+		return keybind;
+	}
+
+	public void setKeybind(int keybind) {
+		this.keybind = keybind;
+		config.setModuleKeybind(id, keybind);
 	}
 }

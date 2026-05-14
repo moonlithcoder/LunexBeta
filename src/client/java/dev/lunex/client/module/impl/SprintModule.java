@@ -6,9 +6,11 @@ import dev.lunex.client.module.Module;
 
 import net.minecraft.client.MinecraftClient;
 
+import org.lwjgl.glfw.GLFW;
+
 public final class SprintModule extends Module {
 	public SprintModule(ClientConfig config) {
-		super("sprint", "Sprint", "Keeps sprint active while moving forward.", Category.MOVEMENT, true, config);
+		super("sprint", "Sprint", "Keeps sprint active", Category.MOVEMENT, true, GLFW.GLFW_KEY_R, config);
 	}
 
 	@Override

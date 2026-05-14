@@ -4,7 +4,6 @@ import dev.lunex.Lunex;
 import dev.lunex.client.config.ClientConfig;
 import dev.lunex.client.event.ClientEvents;
 import dev.lunex.client.module.ModuleManager;
-import dev.lunex.client.render.HudRenderer;
 
 import net.fabricmc.api.ClientModInitializer;
 
@@ -14,7 +13,6 @@ public final class LunexClient implements ClientModInitializer {
 	private final ClientConfig config = new ClientConfig();
 	private final ModuleManager moduleManager = new ModuleManager(config);
 	private final ClientEvents events = new ClientEvents(moduleManager);
-	private final HudRenderer hudRenderer = new HudRenderer(config, moduleManager);
 
 	@Override
 	public void onInitializeClient() {
@@ -22,7 +20,6 @@ public final class LunexClient implements ClientModInitializer {
 		config.load();
 		moduleManager.registerDefaults();
 		events.register();
-		hudRenderer.register();
 		Lunex.LOGGER.info("{} client initialized", Lunex.NAME);
 	}
 

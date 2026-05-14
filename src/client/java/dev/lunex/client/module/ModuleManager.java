@@ -3,7 +3,6 @@ package dev.lunex.client.module;
 import dev.lunex.client.config.ClientConfig;
 import dev.lunex.client.gui.ClickGuiScreen;
 import dev.lunex.client.module.impl.AuraModule;
-import dev.lunex.client.module.impl.CoordinatesModule;
 import dev.lunex.client.module.impl.FullbrightModule;
 import dev.lunex.client.module.impl.SprintModule;
 import dev.lunex.client.module.impl.TargetEspModule;
@@ -37,7 +36,6 @@ public final class ModuleManager {
 		register(new SprintModule(config));
 		register(targetEspModule);
 		register(new FullbrightModule(config));
-		register(new CoordinatesModule(config));
 		modules.forEach(Module::loadState);
 	}
 

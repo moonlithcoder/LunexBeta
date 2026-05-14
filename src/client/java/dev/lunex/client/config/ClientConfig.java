@@ -13,7 +13,6 @@ import java.util.Map;
 public final class ClientConfig {
 	private final Path path = FabricLoader.getInstance().getConfigDir().resolve("lunex.properties");
 	private final Map<String, Boolean> moduleStates = new HashMap<>();
-	private boolean hudEnabled = true;
 
 	public void load() {
 		if (!Files.exists(path)) {
@@ -32,7 +31,6 @@ public final class ClientConfig {
 
 	public void save() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("hud=").append(hudEnabled).append('\n');
 		moduleStates.entrySet().stream()
 				.sorted(Map.Entry.comparingByKey())
 				.forEach(entry -> builder
@@ -48,15 +46,6 @@ public final class ClientConfig {
 		} catch (IOException exception) {
 			Lunex.LOGGER.warn("Failed to save config", exception);
 		}
-	}
-
-	public boolean isHudEnabled() {
-		return hudEnabled;
-	}
-
-	public void setHudEnabled(boolean hudEnabled) {
-		this.hudEnabled = hudEnabled;
-		save();
 	}
 
 	public boolean isModuleEnabled(String moduleId, boolean defaultValue) {
@@ -75,11 +64,6 @@ public final class ClientConfig {
 
 		String[] parts = line.split("=", 2);
 		if (parts.length != 2) {
-			return;
-		}
-
-		if ("hud".equals(parts[0])) {
-			hudEnabled = Boolean.parseBoolean(parts[1]);
 			return;
 		}
 
